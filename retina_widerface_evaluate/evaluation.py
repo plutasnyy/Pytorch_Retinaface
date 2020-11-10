@@ -215,7 +215,7 @@ def voc_ap(rec, prec):
     for i in range(mpre.size - 1, 0, -1):
         mpre[i - 1] = np.maximum(mpre[i - 1], mpre[i])
 
-    # to calculate area under PR curve, look for points
+    # to calculate area under PR retina_curve, look for points
     # where X axis (recall) changes value
     i = np.where(mrec[1:] != mrec[:-1])[0]
 

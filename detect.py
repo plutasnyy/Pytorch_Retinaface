@@ -4,12 +4,12 @@ import argparse
 import torch
 import torch.backends.cudnn as cudnn
 import numpy as np
-from data import cfg_mnet, cfg_re50
-from layers.functions.prior_box import PriorBox
-from utils.nms.py_cpu_nms import py_cpu_nms
+from retina_data import cfg_mnet, cfg_re50
+from retina_layers.functions.prior_box import PriorBox
+from retina_utils.nms.py_cpu_nms import py_cpu_nms
 import cv2
-from models.retinaface import RetinaFace
-from utils.box_utils import decode, decode_landm
+from retina_models.retinaface import RetinaFace
+from retina_utils.box_utils import decode, decode_landm
 import time
 
 parser = argparse.ArgumentParser(description='Retinaface')
@@ -84,7 +84,7 @@ if __name__ == '__main__':
 
     # testing begin
     for i in range(100):
-        image_path = "./curve/test.jpg"
+        image_path = "retina_curve/test.jpg"
         img_raw = cv2.imread(image_path, cv2.IMREAD_COLOR)
 
         img = np.float32(img_raw)

@@ -4,9 +4,9 @@ import numpy as np
 
 def point_form(boxes):
     """ Convert prior_boxes to (xmin, ymin, xmax, ymax)
-    representation for comparison to point form ground truth data.
+    representation for comparison to point form ground truth retina_data.
     Args:
-        boxes: (tensor) center-size default boxes from priorbox layers.
+        boxes: (tensor) center-size default boxes from priorbox retina_layers.
     Return:
         boxes: (tensor) Converted xmin, ymin, xmax, ymax form of boxes.
     """
@@ -16,7 +16,7 @@ def point_form(boxes):
 
 def center_size(boxes):
     """ Convert prior_boxes to (cx, cy, w, h)
-    representation for comparison to center-size form ground truth data.
+    representation for comparison to center-size form ground truth retina_data.
     Args:
         boxes: (tensor) point_form boxes
     Return:
@@ -55,7 +55,7 @@ def jaccard(box_a, box_b):
         A ∩ B / A ∪ B = A ∩ B / (area(A) + area(B) - A ∩ B)
     Args:
         box_a: (tensor) Ground truth bounding boxes, Shape: [num_objects,4]
-        box_b: (tensor) Prior boxes from priorbox layers, Shape: [num_priors,4]
+        box_b: (tensor) Prior boxes from priorbox retina_layers, Shape: [num_priors,4]
     Return:
         jaccard overlap: (tensor) Shape: [box_a.size(0), box_b.size(0)]
     """
@@ -70,7 +70,7 @@ def jaccard(box_a, box_b):
 
 def matrix_iou(a, b):
     """
-    return iou of a and b, numpy version for data augenmentation
+    return iou of a and b, numpy version for retina_data augenmentation
     """
     lt = np.maximum(a[:, np.newaxis, :2], b[:, :2])
     rb = np.minimum(a[:, np.newaxis, 2:], b[:, 2:])
@@ -83,7 +83,7 @@ def matrix_iou(a, b):
 
 def matrix_iof(a, b):
     """
-    return iof of a and b, numpy version for data augenmentation
+    return iof of a and b, numpy version for retina_data augenmentation
     """
     lt = np.maximum(a[:, np.newaxis, :2], b[:, :2])
     rb = np.minimum(a[:, np.newaxis, 2:], b[:, 2:])
@@ -100,7 +100,7 @@ def match(threshold, truths, priors, variances, labels, landms, loc_t, conf_t, l
     Args:
         threshold: (float) The overlap threshold used when mathing boxes.
         truths: (tensor) Ground truth boxes, Shape: [num_obj, 4].
-        priors: (tensor) Prior boxes from priorbox layers, Shape: [n_priors,4].
+        priors: (tensor) Prior boxes from priorbox retina_layers, Shape: [n_priors,4].
         variances: (tensor) Variances corresponding to each prior coord,
             Shape: [num_priors, 4].
         labels: (tensor) All the class labels for the image, Shape: [num_obj].
@@ -154,7 +154,7 @@ def match(threshold, truths, priors, variances, labels, landms, loc_t, conf_t, l
 
 
 def encode(matched, priors, variances):
-    """Encode the variances from the priorbox layers into the ground truth boxes
+    """Encode the variances from the priorbox retina_layers into the ground truth boxes
     we have matched (based on jaccard overlap) with the prior boxes.
     Args:
         matched: (tensor) Coords of ground truth for each prior in point-form
@@ -177,7 +177,7 @@ def encode(matched, priors, variances):
     return torch.cat([g_cxcy, g_wh], 1)  # [num_priors,4]
 
 def encode_landm(matched, priors, variances):
-    """Encode the variances from the priorbox layers into the ground truth boxes
+    """Encode the variances from the priorbox retina_layers into the ground truth boxes
     we have matched (based on jaccard overlap) with the prior boxes.
     Args:
         matched: (tensor) Coords of ground truth for each prior in point-form
@@ -210,7 +210,7 @@ def decode(loc, priors, variances):
     """Decode locations from predictions using priors to undo
     the encoding we did for offset regression at train time.
     Args:
-        loc (tensor): location predictions for loc layers,
+        loc (tensor): location predictions for loc retina_layers,
             Shape: [num_priors,4]
         priors (tensor): Prior boxes in center-offset form.
             Shape: [num_priors,4].
@@ -230,7 +230,7 @@ def decode_landm(pre, priors, variances):
     """Decode landm from predictions using priors to undo
     the encoding we did for offset regression at train time.
     Args:
-        pre (tensor): landm predictions for loc layers,
+        pre (tensor): landm predictions for loc retina_layers,
             Shape: [num_priors,10]
         priors (tensor): Prior boxes in center-offset form.
             Shape: [num_priors,4].
@@ -252,7 +252,7 @@ def log_sum_exp(x):
     This will be used to determine unaveraged confidence loss across
     all examples in a batch.
     Args:
-        x (Variable(tensor)): conf_preds from conf layers
+        x (Variable(tensor)): conf_preds from conf retina_layers
     """
     x_max = x.data.max()
     return torch.log(torch.sum(torch.exp(x-x_max), 1, keepdim=True)) + x_max
